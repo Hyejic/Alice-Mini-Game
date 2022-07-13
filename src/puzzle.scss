@@ -83,3 +83,24 @@
     background-position-y: -255px;
   }
 }
+
+.wait {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background-color: #333;
+  color: #fafafa;
+  p {
+    text-align: center;
+    font: {
+      size: 22px;
+    }
+    span {
+      display: block;
+      padding-top: 10px;
+      font-size: 0.8em;
+    }
+  }
+}
