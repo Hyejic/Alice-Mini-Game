@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import "./puzzle.scss";
 
 function Puzzle() {
@@ -20,6 +20,7 @@ function Puzzle() {
         <div
           className={"puzzle__tile tile" + tile.key}
           data-index={tile.key}
+          onClick={handleClick}
           key={index}
         ></div>
       );
@@ -50,25 +51,53 @@ function Puzzle() {
     return array;
   }
 
-  //setGame
-  // const wait = () => {
-  //   let count = waitingCount;
-  //   setInterval(() => {
-  //     setWaitingCount(--count);
-  //   }, 1000);
-  // };
+  //event
+  const beforeEl = {
+    el: null,
+    class: null,
+    index: null,
+  };
+  const afterEl = {
+    el: null,
+    class: null,
+    index: null,
+  };
 
-  // const clear = () => {
-  //   clearInterval(wait);
-  // };
+  function handleClick(e) {
+    const obj = e.target;
+
+    if(beforeEl.el !== null && !obj.classList.contains("on")) {
+      afterEl.el = obj;
+      afterEl.class = obj.className;
+      afterEl.index = [...obj.parentNode.children].indexOf(obj);
+    } else {
+      beforeEl.el = obj;
+      beforeEl.class = obj.className;
+      beforeEl.index = [...obj.parentNode.children].indexOf(obj);
+      obj.classList.add("on");
+    }
+
+    console.log("beforeEl", beforeEl);
+    console.log("afterEl", afterEl);
+    console.log("-------------------------------------");
+  }
+  // console.log(containerRef);
+  useEffect(() => {
+    // containerRef.addEventListener("click", (e) => {
+    //   const obj = e.target;
+    //   console.log(obj);
+    //   // dragged.el = obj;
+    //   // dragged.el = obj;
+    // });
+  }, []);
 
   const setGame = () => {
     setStart(true);
     setTimeout(() => {
       setCount(true);
-      setWaitingCount(0);
     }, 5000);
   };
+
   // 대기화면
   const Waitng = () => {
     return (
@@ -82,9 +111,10 @@ function Puzzle() {
 
   return (
     <div className="puzzle">
-      <p className="puzzle__time">{waitingCount}</p>
+      <p className="puzzle__time">0</p>
       <div className="puzzle__board">
-        {isStart ? isCount ? <Shuffletiles /> : <Puzzletiles /> : <Waitng />}
+        {/* {isStart ? isCount ? <Shuffletiles /> : <Puzzletiles /> : <Waitng />} */}
+        <Shuffletiles />
       </div>
       <button className="puzzle__btn" onClick={setGame}>
         <span>Start</span>
