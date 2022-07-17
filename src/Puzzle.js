@@ -12,6 +12,29 @@ function Puzzle() {
   let tiles = [];
   tiles = Puzzletiles();
 
+  // create puzzle tile
+  function Puzzletiles() {
+    let puzzleTilesArray = [];
+    for (let i = 1; i <= tileLength; i++) {
+      puzzleTilesArray.push(
+        <div className={"puzzle__tile tile" + i} data-index={i} key={i}></div>
+      );
+    }
+    return puzzleTilesArray;
+  }
+  
+  // 퍼즐 섞기
+  function shuffle(array) {
+    // clear();
+    let index = array.length - 1;
+    while (index > 0) {
+      const randomIndex = Math.floor(Math.random() * (index + 1));
+      [array[index], array[randomIndex]] = [array[randomIndex], array[index]];
+      index--;
+    }
+    return array;
+  }
+  
   // 섞인 퍼즐 타일
   function Shuffletiles() {
     let shuffleTilesArray = [];
@@ -28,28 +51,6 @@ function Puzzle() {
     return shuffleTilesArray;
   }
 
-  // create puzzle tile
-  function Puzzletiles() {
-    let puzzleTilesArray = [];
-    for (let i = 1; i <= tileLength; i++) {
-      puzzleTilesArray.push(
-        <div className={"puzzle__tile tile" + i} data-index={i} key={i}></div>
-      );
-    }
-    return puzzleTilesArray;
-  }
-
-  // 퍼즐 섞기
-  function shuffle(array) {
-    // clear();
-    let index = array.length - 1;
-    while (index > 0) {
-      const randomIndex = Math.floor(Math.random() * (index + 1));
-      [array[index], array[randomIndex]] = [array[randomIndex], array[index]];
-      index--;
-    }
-    return array;
-  }
 
   //event
   const beforeEl = {
@@ -66,22 +67,48 @@ function Puzzle() {
   function handleClick(e) {
     const obj = e.target;
 
-    if(beforeEl.el !== null && !obj.classList.contains("on")) {
+    if(beforeEl.el === null && !obj.classList.contains("on")) {
+        beforeEl.el = obj; 
+        beforeEl.class = obj.className;
+        beforeEl.index = [...obj.parentNode.children].indexOf(obj);
+        obj.classList.add("on");
+    } else {      
       afterEl.el = obj;
       afterEl.class = obj.className;
       afterEl.index = [...obj.parentNode.children].indexOf(obj);
-    } else {
-      beforeEl.el = obj;
-      beforeEl.class = obj.className;
-      beforeEl.index = [...obj.parentNode.children].indexOf(obj);
-      obj.classList.add("on");
+      beforeEl.el.classList.remove("on");
+      
+      if(afterEl.class !== beforeEl.class) {    
+        let originPlace;
+        let isLast = false;
+
+        if(beforeEl.el.nextSibling) {
+          originPlace = beforeEl.el.nextSibling;
+        } else {
+          originPlace = beforeEl.el.previousSibling;
+          isLast = true;
+        }
+        console.log(originPlace);
+        
+        afterEl.index < beforeEl.index ?  afterEl.el.before(beforeEl.el)  : afterEl.el.after(beforeEl.el);
+        isLast ? originPlace.after(afterEl.el) : originPlace.before(afterEl.el);
+
+        console.log("beforeEl", beforeEl);
+        console.log("afterEl", afterEl);
+        console.log("-------------------------------------");  
+      }
+
+      beforeEl.el = null;
+      beforeEl.class = null;
+      beforeEl.index = null;
+      afterEl.el = null;
+      afterEl.class = null;
+      afterEl.index = null;
     }
 
-    console.log("beforeEl", beforeEl);
-    console.log("afterEl", afterEl);
-    console.log("-------------------------------------");
+
   }
-  // console.log(containerRef);
+  
   useEffect(() => {
     // containerRef.addEventListener("click", (e) => {
     //   const obj = e.target;
@@ -113,8 +140,8 @@ function Puzzle() {
     <div className="puzzle">
       <p className="puzzle__time">0</p>
       <div className="puzzle__board">
-        {/* {isStart ? isCount ? <Shuffletiles /> : <Puzzletiles /> : <Waitng />} */}
-        <Shuffletiles />
+        {isStart ? isCount ? <Shuffletiles /> : <Puzzletiles /> : <Waitng />}
+        {/* <Shuffletiles /> */}
       </div>
       <button className="puzzle__btn" onClick={setGame}>
         <span>Start</span>
