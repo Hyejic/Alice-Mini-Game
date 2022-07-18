@@ -5,7 +5,7 @@ function Puzzle() {
   // setting
   const [isStart, setStart] = useState(false);
   const [isCount, setCount] = useState(false);
-  const [waitingCount, setWaitingCount] = useState(5);
+  const [waitingTime, setWaitingTime] = useState(5);
   const tileLength = 16;
 
   // 완성된 퍼즐 Array
@@ -64,6 +64,8 @@ function Puzzle() {
     index: null,
   };
 
+
+
   function handleClick(e) {
     const obj = e.target;
 
@@ -98,6 +100,8 @@ function Puzzle() {
         console.log("-------------------------------------");  
       }
 
+      checkStatus();
+
       beforeEl.el = null;
       beforeEl.class = null;
       beforeEl.index = null;
@@ -108,16 +112,32 @@ function Puzzle() {
 
 
   }
-  
+
   useEffect(() => {
     // containerRef.addEventListener("click", (e) => {
-    //   const obj = e.target;
-    //   console.log(obj);
-    //   // dragged.el = obj;
-    //   // dragged.el = obj;
-    // });
-  }, []);
+      //   const obj = e.target;
+      //   console.log(obj);
+      //   // dragged.el = obj;
+      //   // dragged.el = obj;
+      // });
+      
+      // const currentList = [...containerRef];
+      
+    }, []);
+    
+  const containerRef = useRef();
+  function checkStatus() {
+    const currentList = [...containerRef.current.children];
+    const unMatchedList = currentList.filter((child, index) => Number(child.getAttribute("data-index")) !== (index + 1) );
+      console.log(unMatchedList);
 
+    if( unMatchedList.length === 0 ) {
+      setTimeout(() => {
+        alert("성공!");
+      }, 500)
+    }
+
+  }
   const setGame = () => {
     setStart(true);
     setTimeout(() => {
@@ -139,7 +159,7 @@ function Puzzle() {
   return (
     <div className="puzzle">
       <p className="puzzle__time">0</p>
-      <div className="puzzle__board">
+      <div className="puzzle__board" ref={containerRef}>
         {isStart ? isCount ? <Shuffletiles /> : <Puzzletiles /> : <Waitng />}
         {/* <Shuffletiles /> */}
       </div>
